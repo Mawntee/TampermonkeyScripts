@@ -1,0 +1,38 @@
+// ==UserScript==
+// @name         Clean SoundCloud URL Copy
+// @namespace    http://tampermonkey.net/
+// @version      1.0
+// @description  Remove query parameters from SoundCloud URLs when copying links
+// @author       Mawntee
+// @match        *://soundcloud.com/*
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    // Function to clean the URL by removing everything after the "?" symbol
+    function cleanURL(url) {
+        return url.split('?')[0];
+    }
+
+    // Add an event listener for when the user clicks the "Copy Link" button
+    document.addEventListener('click', function(event) {
+        if (event.target && event.target.matches('button[title="Copy Link"]')) {
+            // Delay to ensure the link is in the clipboard
+            setTimeout(function() {
+                // Get the URL currently in the clipboard
+                navigator.clipboard.readText().then(function(text) {
+                    const cleanedURL = cleanURL(text);
+                    // Copy the cleaned URL back to the clipboard
+                    navigator.clipboard.writeText(cleanedURL).then(function() {
+                        console.log("Cleaned URL copied to clipboard:", cleanedURL);
+                    }, function(err) {
+                        console.error("Could not copy cleaned URL:", err);
+                    });
+                });
+            }, 100);
+        }
+    });
+
+})();
